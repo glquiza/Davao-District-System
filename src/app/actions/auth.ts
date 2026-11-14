@@ -66,6 +66,21 @@ export async function signUpAction(formData: FormData) {
     redirect("/register?error=" + encodeURIComponent(error.message));
   }
 
+  // When "Confirm email" is enabled and the email is already registered,
+  // Supabase returns a user with an empty identities array instead of sending a duplicate email
+  if (
+    data.user &&
+    Array.isArray(data.user.identities) &&
+    data.user.identities.length === 0
+  ) {
+    redirect(
+      "/login?error=" +
+        encodeURIComponent(
+          `An account with "${email}" is already registered! Please sign in with your password instead.`
+        )
+    );
+  }
+
   if (data.user) {
     await supabase.from("profiles").upsert(
       {

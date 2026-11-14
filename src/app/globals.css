@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-ivory: #F5F1E9;
+    --bg-cream: #F0ECE3;
+    --surface-white: #FFFFFF;
+    --text-charcoal: #202820;
+    --accent-olive: #303B32;
+    --accent-gold: #D6C6A5;
+  }
+
+  body {
+    background-color: #F5F1E9;
+    background-image:
+      linear-gradient(165deg, rgba(251, 249, 244, 0.86) 0%, rgba(245, 241, 233, 0.80) 48%, rgba(232, 223, 204, 0.88) 100%),
+      url("/district-bg.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: #202820;
+    font-family: "DM Sans", system-ui, -apple-system, sans-serif;
+    letter-spacing: -0.005em;
+    @apply antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  .font-serif {
+    font-family: "Playfair Display", Georgia, Cambria, "Times New Roman", serif;
+    color: #202820;
+    letter-spacing: -0.015em;
+  }
+
+  input,
+  select,
+  textarea {
+    font-family: "DM Sans", system-ui, -apple-system, sans-serif;
+    color: #202820;
+    transition: border-color 200ms ease, box-shadow 200ms ease, background-color 200ms ease;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #8C9288;
+  }
+
+  /* Gentle, refined 200ms transitions across buttons and interactive links
+     (excluding transform so CSS never conflicts with GSAP) */
+  button:not(:disabled),
+  a[class*="rounded-lg"],
+  a[class*="rounded-xl"],
+  a[class*="rounded-2xl"],
+  a[class*="rounded-full"] {
+    transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow;
+    transition-duration: 200ms;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px #F5F1E9, 0 0 0 4px #D6C6A5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,11 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { validateRealEmailAddress } from "@/lib/email-validator";
 import { createClient } from "@/lib/supabase/server";
 
 export async function signInAction(formData: FormData) {
-  const email = String(formData.get("email") ?? "").trim();
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
 
   if (!email || !password) {
@@ -24,7 +26,7 @@ export async function signInAction(formData: FormData) {
 
 export async function signUpAction(formData: FormData) {
   const fullName = String(formData.get("full_name") ?? "").trim();
-  const email = String(formData.get("email") ?? "").trim();
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
 
   if (!fullName || !email || !password) {
@@ -35,11 +37,25 @@ export async function signUpAction(formData: FormData) {
     redirect("/register?error=" + encodeURIComponent("Password must be at least 6 characters."));
   }
 
+  const emailCheck = await validateRealEmailAddress(email);
+  if (!emailCheck.valid) {
+    redirect(
+      "/register?error=" +
+        encodeURIComponent(emailCheck.reason ?? "Please enter a valid, active email address.")
+    );
+  }
+
+  const headerList = await headers();
+  const origin =
+    headerList.get("origin") ||
+    (headerList.get("host") ? `https://${headerList.get("host")}` : "http://localhost:3000");
+
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
+      emailRedirectTo: `${origin}/auth/callback`,
       data: {
         full_name: fullName,
       },

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowRight, BellRing, Building2, Database, ShieldCheck, Video } from "lucide-react";
 import { GsapPageAnimator } from "@/components/gsap/GsapPageAnimator";
+import { InstallAppButton } from "@/components/InstallAppButton";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { getCurrentUserContext } from "@/lib/auth-context";
 
@@ -72,6 +73,7 @@ export default async function HomePage() {
               >
                 Sign In
               </Link>
+              <InstallAppButton variant="hero" />
             </div>
           ) : (
             <div

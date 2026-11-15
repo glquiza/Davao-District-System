@@ -1,15 +1,29 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { GsapButtonEnhancer } from "@/components/gsap/GsapButtonEnhancer";
 import "./globals.css";
+
+export const viewport: Viewport = {
+  themeColor: "#303B32",
+  width: "device-width",
+  initialScale: 1,
+};
 
 export const metadata: Metadata = {
   title: "Davao District System — PMCC (4th Watch)",
   description:
-    "Centralized Web-Based Church Programs, Activities, and Membership Management for Davao District",
+    "An Integrated Digital Platform for Managing Church Programs, Activities, Livestreams, and Locale Membership",
   manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Davao District",
+  },
   icons: {
-    icon: "/pmcc-logo.png",
-    apple: "/pmcc-logo.png",
+    icon: [
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/icon-192.png", sizes: "192x192", type: "image/png" }],
   },
 };
 

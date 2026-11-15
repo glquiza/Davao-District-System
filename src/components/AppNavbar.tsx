@@ -18,6 +18,7 @@ import {
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { signOutAction } from "@/app/actions/auth";
+import { InstallAppButton } from "@/components/InstallAppButton";
 import { evaluateDueActivityReminders } from "@/lib/activity-reminders";
 import { getLocaleAdminInviteStatus, isLocaleRemoved } from "@/lib/locale-metadata";
 import { createClient } from "@/lib/supabase/client";
@@ -386,8 +387,10 @@ export function AppNavbar({ ctx }: { ctx: UserAccessContext }) {
             })}
           </nav>
 
-          {/* Right Controls: Notifications + User Profile + Mobile Menu Toggle */}
+          {/* Right Controls: Install App + Notifications + User Profile + Mobile Menu Toggle */}
           <div className="flex items-center gap-2">
+            <InstallAppButton variant="navbar" />
+
             <Link
               href="/notifications"
               className={`relative inline-flex items-center justify-center h-9 w-9 rounded-xl border ${

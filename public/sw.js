@@ -1,9 +1,10 @@
-const CACHE_NAME = "davao-district-pwa-v1";
+const CACHE_NAME = "davao-district-pwa-v2";
 const PRECACHE_ASSETS = [
   "/manifest.json",
   "/pmcc-logo.png",
   "/icon-192.png",
   "/icon-512.png",
+  "/icon-maskable-512.png",
 ];
 
 self.addEventListener("install", (event) => {

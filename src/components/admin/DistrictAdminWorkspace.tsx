@@ -33,6 +33,7 @@ import {
 import { ActivityPublisherForm } from "@/components/ActivityPublisherForm";
 import { AnimatedCounter } from "@/components/gsap/AnimatedCounter";
 import { DeleteActivityButton } from "@/components/ui/DeleteActivityButton";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 import { SubmitButton } from "@/components/ui/SubmitButton";
 import { computeActivityScheduleStatus } from "@/lib/activity-reminders";
 import { formatPhilippineDateTime } from "@/lib/date-utils";
@@ -590,13 +591,12 @@ export function DistrictAdminWorkspace({
                             <label className="block text-[11px] font-medium uppercase tracking-widest text-[#6E3429] mb-1">
                               Confirm Your District Admin Password *
                             </label>
-                            <input
-                              type="password"
+                            <PasswordInput
                               name="password"
                               required
                               autoComplete="current-password"
                               placeholder="Enter your account password to verify..."
-                              className="w-full rounded-lg border border-[#C9A69B] bg-white px-3 py-2 text-xs text-[#202820] focus:border-[#6E3429] focus:outline-none"
+                              className="rounded-lg border border-[#C9A69B] bg-white px-3 py-2 text-xs text-[#202820] focus:border-[#6E3429] focus:outline-none"
                             />
                           </div>
 

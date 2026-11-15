@@ -4,6 +4,7 @@ import { LogIn, X } from "lucide-react";
 import { signInAction } from "@/app/actions/auth";
 import { FlashBanner } from "@/components/FlashBanner";
 import { GsapPageAnimator } from "@/components/gsap/GsapPageAnimator";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 import { SubmitButton } from "@/components/ui/SubmitButton";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
@@ -84,13 +85,12 @@ export default async function LoginPage({
               <label className="block text-xs font-medium uppercase tracking-widest text-[#475048] mb-2">
                 Password
               </label>
-              <input
-                type="password"
+              <PasswordInput
                 name="password"
                 required
                 autoComplete="current-password"
                 placeholder="••••••••"
-                className="w-full rounded-xl border border-[#D6C6A5] bg-[#F5F1E9]/40 px-4 py-2.5 text-sm text-[#202820] focus:border-[#303B32] focus:bg-white focus:outline-none"
+                className="rounded-xl border border-[#D6C6A5] bg-[#F5F1E9]/40 px-4 py-2.5 text-sm text-[#202820] focus:border-[#303B32] focus:bg-white focus:outline-none"
               />
             </div>
 

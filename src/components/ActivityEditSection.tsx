@@ -12,17 +12,10 @@ import { ReminderSchedulePicker } from "@/components/ui/ReminderSchedulePicker";
 import { SubmitButton } from "@/components/ui/SubmitButton";
 import { ThumbnailUploadField } from "@/components/ui/ThumbnailUploadField";
 import { parseActivityMetadata } from "@/lib/activity-reminders";
+import { formatToDateTimeLocalInput } from "@/lib/date-utils";
 import type { ActivityModality, ActivityStatus, ProgramActivity } from "@/types/database";
 
 gsap.registerPlugin(useGSAP);
-
-function toDateTimeLocalValue(isoString: string | null | undefined): string {
-  if (!isoString) return "";
-  const date = new Date(isoString);
-  if (Number.isNaN(date.getTime())) return "";
-  const offsetMs = date.getTimezoneOffset() * 60000;
-  return new Date(date.getTime() - offsetMs).toISOString().slice(0, 16);
-}
 
 export function ActivityEditSection({
   activity,
@@ -129,6 +122,11 @@ export function ActivityEditSection({
             <input type="hidden" name="activity_id" value={activity.id} />
             <input type="hidden" name="return_path" value={returnPath} />
             <input type="hidden" name="modality" value={modality} />
+            <input
+              type="hidden"
+              name="timezone_offset"
+              value={typeof window !== "undefined" ? String(new Date().getTimezoneOffset()) : "-480"}
+            />
 
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="sm:col-span-2">
@@ -217,7 +215,7 @@ export function ActivityEditSection({
                   type="datetime-local"
                   name="starts_at"
                   required
-                  defaultValue={toDateTimeLocalValue(activity.starts_at)}
+                  defaultValue={formatToDateTimeLocalInput(activity.starts_at)}
                   className="w-full rounded-xl border border-[#D6C6A5] bg-white px-3.5 py-2 text-sm text-[#202820] focus:border-[#303B32] focus:outline-none"
                 />
               </div>
@@ -229,7 +227,7 @@ export function ActivityEditSection({
                 <input
                   type="datetime-local"
                   name="ends_at"
-                  defaultValue={toDateTimeLocalValue(activity.ends_at)}
+                  defaultValue={formatToDateTimeLocalInput(activity.ends_at)}
                   className="w-full rounded-xl border border-[#D6C6A5] bg-white px-3.5 py-2 text-sm text-[#202820] focus:border-[#303B32] focus:outline-none"
                 />
               </div>

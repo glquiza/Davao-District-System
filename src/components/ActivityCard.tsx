@@ -11,6 +11,7 @@ import {
   formatReminderBadgeList,
   parseActivityMetadata,
 } from "@/lib/activity-reminders";
+import { formatPhilippineDateTime } from "@/lib/date-utils";
 import type { ProgramActivity } from "@/types/database";
 
 const levelBadgeStyles: Record<ProgramActivity["level"], string> = {
@@ -63,11 +64,7 @@ export function ActivityCard({
         ? "Davao District"
         : activity.locale?.name ?? "Locale";
 
-  const startDate = new Date(activity.starts_at);
-  const formattedStart = startDate.toLocaleString("en-PH", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
+  const formattedStart = formatPhilippineDateTime(activity.starts_at);
 
   const hasLinks = Boolean(activity.activity_links && activity.activity_links.length > 0);
   const { cleanDescription, reminderMinutes } = parseActivityMetadata(activity.description);

@@ -11,6 +11,7 @@ import {
   formatReminderBadgeList,
   parseActivityMetadata,
 } from "@/lib/activity-reminders";
+import { formatPhilippineDateTime } from "@/lib/date-utils";
 import { requireUserContext } from "@/lib/auth-context";
 import { createClient } from "@/lib/supabase/server";
 import type { ProgramActivity } from "@/types/database";
@@ -121,7 +122,7 @@ export default async function ActivityDetailPage({
             <div>
               <p className="font-semibold text-[#202820]">Schedule</p>
               <p className="mt-0.5">
-                {new Date(activity.starts_at).toLocaleString("en-PH", {
+                {formatPhilippineDateTime(activity.starts_at, {
                   dateStyle: "full",
                   timeStyle: "short",
                 })}
@@ -129,7 +130,7 @@ export default async function ActivityDetailPage({
               {activity.ends_at && (
                 <p className="text-xs text-[#636B62] mt-1">
                   Ends:{" "}
-                  {new Date(activity.ends_at).toLocaleString("en-PH", {
+                  {formatPhilippineDateTime(activity.ends_at, {
                     dateStyle: "medium",
                     timeStyle: "short",
                   })}

@@ -88,6 +88,11 @@ export function ActivityPublisherForm({
       <input type="hidden" name="district_id" value={districtId} />
       <input type="hidden" name="level" value={selectedLevel} />
       <input type="hidden" name="modality" value={modality} />
+      <input
+        type="hidden"
+        name="timezone_offset"
+        value={typeof window !== "undefined" ? String(new Date().getTimezoneOffset()) : "-480"}
+      />
       {localeId && <input type="hidden" name="locale_id" value={localeId} />}
 
       {/* Step 1: Audience Level Selector Cards */}

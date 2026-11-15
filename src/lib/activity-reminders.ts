@@ -199,6 +199,7 @@ export function evaluateDueActivityReminders(
     const formattedStart = new Date(activity.starts_at).toLocaleString("en-PH", {
       dateStyle: "medium",
       timeStyle: "short",
+      timeZone: "Asia/Manila",
     });
 
     // 1. Check if admin triggered a manual instant reminder blast within the last 24 hours

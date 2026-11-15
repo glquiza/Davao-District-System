@@ -8,6 +8,7 @@ import {
   parseReminderMinutesInput,
   serializeActivityMetadata,
 } from "@/lib/activity-reminders";
+import { parseDateTimeInputToISO } from "@/lib/date-utils";
 import { createClient } from "@/lib/supabase/server";
 import type { ActivityLevel, ActivityModality, ActivityStatus, LinkPlatform } from "@/types/database";
 
@@ -58,8 +59,22 @@ export async function createActivityAction(formData: FormData) {
 
   if (!user) redirect("/login");
 
-  const startsAt = new Date(startsAtRaw).toISOString();
-  const endsAt = endsAtRaw ? new Date(endsAtRaw).toISOString() : null;
+  const timezoneOffset = formData.get("timezone_offset");
+  const startsAt = parseDateTimeInputToISO(
+    startsAtRaw,
+    timezoneOffset !== null ? String(timezoneOffset) : null
+  );
+  const endsAt = endsAtRaw
+    ? parseDateTimeInputToISO(
+        endsAtRaw,
+        timezoneOffset !== null ? String(timezoneOffset) : null
+      )
+    : null;
+
+  if (!startsAt) {
+    redirect(withQueryParam(returnPath, "error", "Invalid start date and time format."));
+  }
+
   const autoStatus = computeActivityScheduleStatus(startsAt, endsAt);
   const serializedDescription = serializeActivityMetadata(description, reminderMinutes);
 
@@ -179,8 +194,22 @@ export async function updateActivityAction(formData: FormData) {
     (existingRow as { description?: string | null } | null)?.description
   );
 
-  const startsAt = new Date(startsAtRaw).toISOString();
-  const endsAt = endsAtRaw ? new Date(endsAtRaw).toISOString() : null;
+  const timezoneOffset = formData.get("timezone_offset");
+  const startsAt = parseDateTimeInputToISO(
+    startsAtRaw,
+    timezoneOffset !== null ? String(timezoneOffset) : null
+  );
+  const endsAt = endsAtRaw
+    ? parseDateTimeInputToISO(
+        endsAtRaw,
+        timezoneOffset !== null ? String(timezoneOffset) : null
+      )
+    : null;
+
+  if (!startsAt) {
+    redirect(withQueryParam(returnPath, "error", "Invalid start date and time format."));
+  }
+
   const autoStatus = computeActivityScheduleStatus(startsAt, endsAt);
   const serializedDescription = serializeActivityMetadata(
     description,

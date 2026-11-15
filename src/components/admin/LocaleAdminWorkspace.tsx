@@ -29,6 +29,7 @@ import { CopyCodeButton } from "@/components/CopyCodeButton";
 import { DeleteActivityButton } from "@/components/ui/DeleteActivityButton";
 import { SubmitButton } from "@/components/ui/SubmitButton";
 import { computeActivityScheduleStatus } from "@/lib/activity-reminders";
+import { formatPhilippineDateTime } from "@/lib/date-utils";
 import { parseLocaleMetadata } from "@/lib/locale-metadata";
 import type {
   InvitationCode,
@@ -603,10 +604,7 @@ export function LocaleAdminWorkspace({
                         </Link>
                         <p className="inline-flex items-center gap-1.5 text-xs text-[#636B62] mt-0.5">
                           <Calendar className="h-3 w-3 text-[#8C7853]" />
-                          {new Date(act.starts_at).toLocaleString("en-PH", {
-                            dateStyle: "medium",
-                            timeStyle: "short",
-                          })}
+                          {formatPhilippineDateTime(act.starts_at)}
                         </p>
                       </div>
 

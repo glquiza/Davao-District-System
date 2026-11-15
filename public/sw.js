@@ -1,4 +1,4 @@
-const CACHE_NAME = "davao-district-pwa-v2";
+const CACHE_NAME = "davao-district-pwa-v3";
 const PRECACHE_ASSETS = [
   "/manifest.json",
   "/pmcc-logo.png",

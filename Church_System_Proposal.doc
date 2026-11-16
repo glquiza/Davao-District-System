@@ -1,0 +1,304 @@
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta charset="utf-8">
+<title>Church Digital Assistant &amp; Attendance System — Project Proposal</title>
+<!--[if gte mso 9]>
+<xml>
+ <w:WordDocument>
+  <w:View>Print</w:View>
+  <w:Zoom>100</w:Zoom>
+  <w:DoNotOptimizeForBrowser/>
+ </w:WordDocument>
+</xml>
+<![endif]-->
+<style>
+  @page {
+    size: letter portrait;
+    margin: 1.0in 1.0in 1.0in 1.0in;
+    mso-header-margin: 0.5in;
+    mso-footer-margin: 0.5in;
+  }
+  body {
+    font-family: 'Calibri', 'Segoe UI', Arial, sans-serif;
+    font-size: 11pt;
+    line-height: 1.5;
+    color: #202820;
+    margin: 0;
+    padding: 0;
+  }
+  .header-banner {
+    text-align: center;
+    border-bottom: 2.5pt solid #8C7853;
+    padding-bottom: 14pt;
+    margin-bottom: 22pt;
+  }
+  .church-subtitle {
+    font-size: 11pt;
+    font-weight: bold;
+    letter-spacing: 1.5pt;
+    text-transform: uppercase;
+    color: #8C7853;
+    margin: 0 0 4pt 0;
+  }
+  .main-title {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 22pt;
+    font-weight: bold;
+    color: #1E281F;
+    margin: 0 0 6pt 0;
+    line-height: 1.2;
+  }
+  .tagline {
+    font-size: 12pt;
+    font-style: italic;
+    color: #555555;
+    margin: 0;
+  }
+  h2 {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 14pt;
+    color: #1E281F;
+    border-bottom: 1pt solid #D6C6A5;
+    padding-bottom: 4pt;
+    margin-top: 18pt;
+    margin-bottom: 8pt;
+  }
+  h3 {
+    font-size: 12pt;
+    color: #303B32;
+    margin-top: 12pt;
+    margin-bottom: 4pt;
+  }
+  p, li {
+    font-size: 11pt;
+    line-height: 1.5;
+    margin-bottom: 6pt;
+  }
+  ul {
+    margin-top: 4pt;
+    margin-bottom: 10pt;
+    padding-left: 20pt;
+  }
+  .callout-box {
+    background-color: #FAF8F5;
+    border-left: 4pt solid #303B32;
+    border-top: 1pt solid #E0DACD;
+    border-right: 1pt solid #E0DACD;
+    border-bottom: 1pt solid #E0DACD;
+    padding: 10pt 14pt;
+    margin: 12pt 0;
+    border-radius: 4pt;
+  }
+  .step-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12pt 0;
+  }
+  .step-num {
+    width: 32pt;
+    vertical-align: top;
+    text-align: center;
+    font-weight: bold;
+    font-size: 14pt;
+    color: #FFFFFF;
+    background-color: #303B32;
+    padding: 8pt 4pt;
+    border-radius: 4pt;
+  }
+  .step-content {
+    vertical-align: top;
+    padding: 6pt 12pt 14pt 12pt;
+  }
+  table.comparison {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14pt 0;
+    font-size: 10.5pt;
+  }
+  table.comparison th {
+    background-color: #303B32;
+    color: #FFFFFF;
+    font-weight: bold;
+    padding: 8pt 10pt;
+    border: 1pt solid #303B32;
+    text-align: left;
+  }
+  table.comparison td {
+    padding: 7pt 10pt;
+    border: 1pt solid #D6C6A5;
+    vertical-align: top;
+  }
+  table.comparison tr:nth-child(even) td {
+    background-color: #FAF8F5;
+  }
+  .sign-off-table {
+    width: 100%;
+    margin-top: 40pt;
+    border: none;
+  }
+  .sign-off-table td {
+    width: 50%;
+    border: none;
+    vertical-align: top;
+    padding-top: 30pt;
+  }
+  .sign-line {
+    border-top: 1pt solid #202820;
+    width: 80%;
+    padding-top: 4pt;
+    font-size: 10pt;
+  }
+</style>
+</head>
+<body>
+
+<div class="header-banner">
+  <p class="church-subtitle">Pentecostal Missionary Church of Christ (4th Watch) &bull; Davao District</p>
+  <h1 class="main-title">Church Digital Assistant &amp; Attendance System</h1>
+  <p class="tagline">A Simple Way to Connect Our Church, Share Schedules, and Take Attendance</p>
+</div>
+
+<div class="callout-box">
+  <strong style="color: #1E281F; font-size: 12pt;">What is this system in simple words?</strong>
+  <p style="margin-top: 4pt; margin-bottom: 0;">
+    Think of this system as <strong>two helpful tools in one</strong>:
+  </p>
+  <ul style="margin-bottom: 0;">
+    <li><strong>For Members:</strong> An <strong>Official Church Bulletin Board right on your phone</strong>. You can always see when the next services are, watch online livestreams, and sign attendance with one tap when you arrive at church.</li>
+    <li><strong>For Pastors &amp; Leaders:</strong> A <strong>Digital Church Record Book</strong>. Instead of writing names on paper sign-up sheets and typing them into a computer later, attendance is counted automatically and can be printed or saved to Excel in one click.</li>
+  </ul>
+</div>
+
+<h2>1. The Common Problems We Face Today</h2>
+<ul>
+  <li><strong>Announcements get lost in group chats:</strong> When we send event schedules on Messenger, they get buried under hundreds of chat messages, and brethren miss church activities.</li>
+  <li><strong>Long lines at the church door:</strong> Brethren have to wait in line to write their names on paper attendance sheets using the same ballpen.</li>
+  <li><strong>Paperwork takes too long:</strong> Church secretaries spend hours after every service trying to read handwritten names and tally who was present.</li>
+  <li><strong>Paper sheets get lost:</strong> If an attendance paper gets misplaced, the record is gone forever.</li>
+</ul>
+
+<h2>2. How It Works in 4 Easy Steps</h2>
+
+<table class="step-table">
+  <tr>
+    <td class="step-num">1</td>
+    <td class="step-content">
+      <strong>Open the Link on Your Phone</strong><br>
+      Members open the church link on their smartphone or computer. There is no need to search Google Play or the Apple App Store. Simply tap <em>"Install App"</em> and an app icon appears on your home screen in 2 seconds.
+    </td>
+  </tr>
+  <tr>
+    <td class="step-num">2</td>
+    <td class="step-content">
+      <strong>Pick Your Local Church</strong><br>
+      Members select their home church (for example: <em>Agdao, Tagum, Digos, or Buhangin</em>). The pastor or administrator confirms them with one tap, creating an accurate church directory.
+    </td>
+  </tr>
+  <tr>
+    <td class="step-num">3</td>
+    <td class="step-content">
+      <strong>Check Church Schedules &amp; Livestreams</strong><br>
+      Members can see all upcoming services, fellowships, and conferences. For online or hybrid services, they can watch the live broadcast directly inside the app without external distractions.
+    </td>
+  </tr>
+  <tr>
+    <td class="step-num">4</td>
+    <td class="step-content">
+      <strong>Sign Attendance in 3 Seconds</strong><br>
+      During church, the pastor flashes a 6-digit number on the screen (or shows a QR code). Members type the code on their phone and tap <em>"Done"</em>. A green checkmark confirms: <strong>"Attendance Recorded!"</strong>
+    </td>
+  </tr>
+</table>
+
+<h2>3. What Happens if Someone Doesn't Have a Smartphone?</h2>
+<div class="callout-box">
+  <p style="margin: 0;">
+    We made sure <strong>no one is left behind</strong>: If an elderly member, a child, or someone whose phone battery died attends church, the pastor or church secretary can simply search their name on the church tablet or phone and tap <strong>"Check In"</strong>. Their attendance is counted right away alongside everyone else!
+  </p>
+</div>
+
+<h2>4. What Church Leaders Get Out of This</h2>
+
+<h3>A. Live Headcount During the Service</h3>
+<p>
+  As brethren type their code or get checked in, leaders can look at their screen and see the number go up live in real time:<br>
+  <em>(Example: "148 brethren present today &bull; 38 from Agdao, 29 from Buhangin, 24 from Tagum...")</em>
+</p>
+
+<h3>B. Complete Control</h3>
+<ul>
+  <li><strong>Start Attendance:</strong> Open attendance when brethren begin arriving.</li>
+  <li><strong>Pause Attendance:</strong> Pause it during the sermon so people focus on the Word of God.</li>
+  <li><strong>Reopen Attendance:</strong> Open it again for latecomers who arrived after the opening prayer.</li>
+  <li><strong>No Duplicates:</strong> The system guarantees that no member can accidentally sign in twice.</li>
+</ul>
+
+<h3>C. Official Reports in 1 Click</h3>
+<p>
+  When the service concludes, the leader taps one button to immediately generate:
+</p>
+<ul>
+  <li>A ready-to-print <strong>PDF paper report</strong> with official church headers and signature lines for district meetings.</li>
+  <li>An <strong>Excel spreadsheet (.xlsx)</strong> ready for digital district archiving.</li>
+  <li>A <strong>Word document (.docx)</strong> for church office filing and minutes.</li>
+</ul>
+
+<h2>5. Why This is Better Than Buying a Regular Mobile App</h2>
+
+<table class="comparison">
+  <thead>
+    <tr>
+      <th style="width: 50%;">Regular Mobile Apps</th>
+      <th style="width: 50%;">Our Church Digital System</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Requires members to search and install from Google Play or Apple App Store.</td>
+      <td><strong>No app store needed.</strong> Just open the link and tap "Install" in 2 seconds.</td>
+    </tr>
+    <tr>
+      <td>Costs hundreds of dollars every year in Apple &amp; Google developer fees.</td>
+      <td><strong>Zero app store fees.</strong> Free to run and update anytime.</td>
+    </tr>
+    <tr>
+      <td>Takes up a lot of phone storage (50MB to 100MB).</td>
+      <td><strong>Very lightweight.</strong> Takes up almost zero phone space.</td>
+    </tr>
+    <tr>
+      <td>Often crashes or fails to run on older smartphones.</td>
+      <td><strong>Works on any gadget:</strong> Android, iPhone, tablet, laptop, or desktop computer.</td>
+    </tr>
+    <tr>
+      <td>Needs fast internet to download and update.</td>
+      <td><strong>Works even on slow mobile data.</strong> Uses less data than loading one picture on Facebook.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout-box" style="text-align: center; margin-top: 20pt;">
+  <strong style="font-size: 13pt; color: #1E281F;">Summary in One Sentence</strong><br>
+  <span style="font-size: 11pt; color: #303B32;">
+    This system removes paper sign-in sheets, helps brethren stay updated with church schedules, and gives leaders fast, accurate attendance reports with zero headache.
+  </span>
+</div>
+
+<table class="sign-off-table">
+  <tr>
+    <td>
+      <div class="sign-line">
+        <strong>Prepared by:</strong><br>
+        Church Technology Secretariat
+      </div>
+    </td>
+    <td style="text-align: right;">
+      <div class="sign-line" style="margin-left: auto;">
+        <strong>Noted by:</strong><br>
+        District Minister / Church Presiding Pastor
+      </div>
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>

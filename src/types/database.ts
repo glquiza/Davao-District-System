@@ -160,6 +160,7 @@ export interface NotificationItem {
   is_read: boolean;
   read_at: string | null;
   created_at: string;
+  activity?: Pick<ProgramActivity, "id" | "title" | "category" | "level" | "starts_at" | "venue"> | null;
 }
 
 export interface AuditLog {

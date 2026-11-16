@@ -8,10 +8,12 @@ import {
 } from "@/lib/locale-metadata";
 import { createClient } from "@/lib/supabase/server";
 import type {
+  ActivityAttendanceRecord,
   AuditLog,
   District,
   Locale,
   LocaleAdminAssignment,
+  Profile,
   ProgramActivity,
 } from "@/types/database";
 
@@ -36,6 +38,8 @@ export default async function DistrictAdminPage({
     activeMemberCountsRes,
     auditLogsRes,
     publishedActivitiesRes,
+    attendanceRes,
+    allMembersRes,
   ] = await Promise.all([
     supabase
       .from("districts")
@@ -57,10 +61,18 @@ export default async function DistrictAdminPage({
     supabase
       .from("programs_activities")
       .select(
-        "id, title, description, level, district_id, locale_id, category, modality, starts_at, ends_at, venue, status, created_by, created_at, updated_at"
+        "id, title, description, level, district_id, locale_id, category, modality, starts_at, ends_at, venue, status, attendance_status, attendance_code, attendance_activated_at, attendance_closed_at, created_by, created_at, updated_at"
       )
       .in("level", ["national", "district"])
       .order("starts_at", { ascending: true }),
+    supabase
+      .from("activity_attendance")
+      .select("*, profile:profiles!user_id(id, full_name, email, avatar_url), locale:locales(id, name, slug)")
+      .order("attended_at", { ascending: false }),
+    supabase
+      .from("profiles")
+      .select("id, full_name, email")
+      .order("full_name", { ascending: true }),
   ]);
 
   const queryError =
@@ -110,6 +122,16 @@ export default async function DistrictAdminPage({
   }
   const auditLogs = (auditLogsRes.data ?? []) as AuditLog[];
   const publishedActivities = (publishedActivitiesRes.data ?? []) as ProgramActivity[];
+  const rawAttendance = (attendanceRes.data ?? []) as ActivityAttendanceRecord[];
+  const allMembers = (allMembersRes.data ?? []) as Pick<Profile, "id" | "full_name" | "email">[];
+
+  const attendanceByActivity: Record<string, ActivityAttendanceRecord[]> = {};
+  for (const att of rawAttendance) {
+    if (!attendanceByActivity[att.activity_id]) {
+      attendanceByActivity[att.activity_id] = [];
+    }
+    attendanceByActivity[att.activity_id].push(att);
+  }
 
   const memberCounts: Record<string, number> = {};
   let totalActiveMembers = 0;
@@ -152,6 +174,8 @@ export default async function DistrictAdminPage({
         totalActiveMembers={totalActiveMembers}
         auditLogs={auditLogs}
         publishedActivities={publishedActivities}
+        attendanceByActivity={attendanceByActivity}
+        allMembers={allMembers}
         initialTab={initialTab}
       />
     </div>

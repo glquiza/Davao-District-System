@@ -32,6 +32,7 @@ import {
 } from "@/app/actions/district-admin";
 import { ActivityPublisherForm } from "@/components/ActivityPublisherForm";
 import { AnimatedCounter } from "@/components/gsap/AnimatedCounter";
+import { DistrictAttendanceManager } from "@/components/admin/DistrictAttendanceManager";
 import { DeleteActivityButton } from "@/components/ui/DeleteActivityButton";
 import { PasswordInput } from "@/components/ui/PasswordInput";
 import { SubmitButton } from "@/components/ui/SubmitButton";
@@ -42,10 +43,12 @@ import {
   parseLocaleMetadata,
 } from "@/lib/locale-metadata";
 import type {
+  ActivityAttendanceRecord,
   AuditLog,
   District,
   Locale,
   LocaleAdminAssignment,
+  Profile,
   ProgramActivity,
 } from "@/types/database";
 
@@ -106,6 +109,8 @@ export function DistrictAdminWorkspace({
   totalActiveMembers,
   auditLogs,
   publishedActivities,
+  attendanceByActivity = {},
+  allMembers = [],
   initialTab = "locales",
 }: {
   district: District | null;
@@ -115,6 +120,8 @@ export function DistrictAdminWorkspace({
   totalActiveMembers: number;
   auditLogs: AuditLog[];
   publishedActivities: ProgramActivity[];
+  attendanceByActivity?: Record<string, ActivityAttendanceRecord[]>;
+  allMembers?: Pick<Profile, "id" | "full_name" | "email">[];
   initialTab?: DistrictTab;
 }) {
   const [activeTab, setActiveTab] = useState<DistrictTab>(initialTab);
@@ -821,6 +828,19 @@ export function DistrictAdminWorkspace({
                           <span className="rounded-full border border-[#D6C6A5]/50 bg-[#F5F1E9] px-2 py-0.5 text-[10px] font-medium capitalize text-[#475048]">
                             {computeActivityScheduleStatus(act.starts_at, act.ends_at)}
                           </span>
+                          <span
+                            className={`rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase ${
+                              act.attendance_status === "active"
+                                ? "bg-emerald-100 text-emerald-800 border-emerald-300"
+                                : act.attendance_status === "paused"
+                                ? "bg-amber-100 text-amber-800 border-amber-300"
+                                : act.attendance_status === "closed"
+                                ? "bg-stone-200 text-stone-700 border-stone-300"
+                                : "bg-[#F5F1E9] text-[#636B62] border-[#D6C6A5]/50"
+                            }`}
+                          >
+                            Attendance: {act.attendance_status?.replace("_", " ") ?? "not started"}
+                          </span>
                         </div>
                         <Link
                           href={`/activities/${act.id}`}
@@ -842,7 +862,14 @@ export function DistrictAdminWorkspace({
                           <span>Open Details</span>
                           <ExternalLink className="h-3 w-3" />
                         </Link>
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <DistrictAttendanceManager
+                            activity={act}
+                            attendanceRecords={attendanceByActivity[act.id] ?? []}
+                            allLocales={locales}
+                            allMembers={allMembers}
+                            returnPath="/district-admin?tab=publish"
+                          />
                           <Link
                             href={`/activities/${act.id}?edit=true`}
                             className="inline-flex items-center gap-1 rounded-lg border border-[#D6C6A5] bg-[#F0ECE3] px-2.5 py-1 text-xs font-medium text-[#202820] hover:bg-[#303B32] hover:text-white"

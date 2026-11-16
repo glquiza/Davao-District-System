@@ -113,6 +113,19 @@ export function ActivityCard({
             >
               {scheduleStatus}
             </span>
+            {activity.attendance_status && activity.attendance_status !== "not_started" && (
+              <span
+                className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase ${
+                  activity.attendance_status === "active"
+                    ? "bg-emerald-100 text-emerald-800 border-emerald-300"
+                    : activity.attendance_status === "paused"
+                    ? "bg-amber-100 text-amber-800 border-amber-300"
+                    : "bg-stone-200 text-stone-700 border-stone-300"
+                }`}
+              >
+                Attendance {activity.attendance_status.replace("_", " ")}
+              </span>
+            )}
           </div>
 
           <span className="inline-flex items-center gap-1.5 rounded-lg border border-[#D6C6A5]/40 bg-[#F5F1E9] px-2.5 py-1 text-xs font-medium text-[#303B32] capitalize">

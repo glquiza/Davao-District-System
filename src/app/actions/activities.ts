@@ -10,7 +10,7 @@ import {
 } from "@/lib/activity-reminders";
 import { parseDateTimeInputToISO } from "@/lib/date-utils";
 import { createClient } from "@/lib/supabase/server";
-import type { ActivityLevel, ActivityModality, ActivityStatus, LinkPlatform } from "@/types/database";
+import type { ActivityLevel, ActivityModality, ActivityStatus, AttendanceStatus, LinkPlatform } from "@/types/database";
 
 function withQueryParam(basePath: string, key: string, value: string): string {
   const sep = basePath.includes("?") ? "&" : "?";
@@ -458,3 +458,237 @@ export async function markAllNotificationsReadAction() {
   revalidatePath("/notifications");
   revalidatePath("/", "layout");
 }
+
+export async function updateAttendanceStatusAction(formData: FormData) {
+  const activityId = String(formData.get("activity_id") ?? "").trim();
+  const status = String(formData.get("status") ?? "").trim() as AttendanceStatus;
+  const code = String(formData.get("attendance_code") ?? "").trim().toUpperCase();
+  const returnPath = String(formData.get("return_path") ?? `/activities/${activityId}`).trim();
+
+  if (!activityId || !status) {
+    redirect(withQueryParam(returnPath, "error", "Missing required attendance parameters."));
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("is_district_admin")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile?.is_district_admin) {
+    redirect(withQueryParam(returnPath, "error", "Only administrators can manage attendance settings."));
+  }
+
+  const updates: Record<string, unknown> = {
+    attendance_status: status,
+  };
+
+  if (status === "active") {
+    if (code) updates.attendance_code = code;
+    updates.attendance_activated_at = new Date().toISOString();
+  } else if (status === "closed") {
+    updates.attendance_closed_at = new Date().toISOString();
+  }
+
+  const { error } = await supabase
+    .from("programs_activities")
+    .update(updates)
+    .eq("id", activityId);
+
+  if (error) {
+    redirect(withQueryParam(returnPath, "error", error.message));
+  }
+
+  revalidatePath("/feed");
+  revalidatePath(`/activities/${activityId}`);
+  revalidatePath("/district-admin");
+  redirect(
+    withQueryParam(
+      returnPath,
+      "message",
+      `Attendance status updated to ${status.replace("_", " ")}.`
+    )
+  );
+}
+
+export async function submitAttendanceAction(formData: FormData) {
+  const activityId = String(formData.get("activity_id") ?? "").trim();
+  const rawCode = String(formData.get("attendance_code") ?? "").trim().toUpperCase();
+  const returnPath = String(formData.get("return_path") ?? `/activities/${activityId}`).trim();
+
+  if (!activityId) {
+    redirect(withQueryParam(returnPath, "error", "Missing activity ID."));
+  }
+  if (!rawCode) {
+    redirect(withQueryParam(returnPath, "error", "Please enter the attendance code."));
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const { data: activity, error: actError } = await supabase
+    .from("programs_activities")
+    .select("id, title, attendance_status, attendance_code")
+    .eq("id", activityId)
+    .single();
+
+  if (actError || !activity) {
+    redirect(withQueryParam(returnPath, "error", "Activity not found."));
+  }
+
+  if (activity.attendance_status !== "active") {
+    if (activity.attendance_status === "paused") {
+      redirect(withQueryParam(returnPath, "error", "Attendance submission is temporarily paused by the administrator."));
+    }
+    if (activity.attendance_status === "closed") {
+      redirect(withQueryParam(returnPath, "error", "Attendance for this activity is officially closed."));
+    }
+    redirect(withQueryParam(returnPath, "error", "Attendance has not been activated for this activity yet."));
+  }
+
+  const expectedCode = (activity.attendance_code ?? "").trim().toUpperCase();
+  if (!expectedCode || rawCode !== expectedCode) {
+    redirect(withQueryParam(returnPath, "error", "Incorrect attendance code. Please check with your pastor or administrator."));
+  }
+
+  const { data: existing } = await supabase
+    .from("activity_attendance")
+    .select("id")
+    .eq("activity_id", activityId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (existing) {
+    redirect(withQueryParam(returnPath, "message", "Attendance Recorded!"));
+  }
+
+  const { data: activeMembership } = await supabase
+    .from("memberships")
+    .select("locale_id")
+    .eq("user_id", user.id)
+    .eq("status", "active")
+    .maybeSingle();
+
+  const { error: insertError } = await supabase
+    .from("activity_attendance")
+    .insert({
+      activity_id: activityId,
+      user_id: user.id,
+      locale_id: activeMembership?.locale_id ?? null,
+      attended_at: new Date().toISOString(),
+    });
+
+  if (insertError) {
+    if (insertError.code === "23505") {
+      redirect(withQueryParam(returnPath, "message", "Attendance Recorded!"));
+    }
+    redirect(withQueryParam(returnPath, "error", insertError.message));
+  }
+
+  revalidatePath(`/activities/${activityId}`);
+  revalidatePath("/district-admin");
+  redirect(withQueryParam(returnPath, "message", "Attendance Recorded!"));
+}
+
+export async function manualCheckInAction(formData: FormData) {
+  const activityId = String(formData.get("activity_id") ?? "").trim();
+  const targetUserId = String(formData.get("user_id") ?? "").trim();
+  const notes = String(formData.get("notes") ?? "").trim();
+  const returnPath = String(formData.get("return_path") ?? `/activities/${activityId}`).trim();
+
+  if (!activityId || !targetUserId) {
+    redirect(withQueryParam(returnPath, "error", "Missing activity or member ID."));
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("is_district_admin")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile?.is_district_admin) {
+    redirect(withQueryParam(returnPath, "error", "Only administrators can manually check in attendees."));
+  }
+
+  const { data: activeMembership } = await supabase
+    .from("memberships")
+    .select("locale_id")
+    .eq("user_id", targetUserId)
+    .eq("status", "active")
+    .maybeSingle();
+
+  const { error } = await supabase
+    .from("activity_attendance")
+    .upsert(
+      {
+        activity_id: activityId,
+        user_id: targetUserId,
+        locale_id: activeMembership?.locale_id ?? null,
+        attended_at: new Date().toISOString(),
+        marked_by: user.id,
+        notes: notes || "Checked in by District Admin",
+      },
+      { onConflict: "activity_id,user_id" }
+    );
+
+  if (error) {
+    redirect(withQueryParam(returnPath, "error", error.message));
+  }
+
+  revalidatePath(`/activities/${activityId}`);
+  revalidatePath("/district-admin");
+  redirect(withQueryParam(returnPath, "message", "Member checked in successfully."));
+}
+
+export async function removeAttendanceRecordAction(formData: FormData) {
+  const recordId = String(formData.get("record_id") ?? "").trim();
+  const activityId = String(formData.get("activity_id") ?? "").trim();
+  const returnPath = String(formData.get("return_path") ?? `/activities/${activityId}`).trim();
+
+  if (!recordId) return;
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("is_district_admin")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile?.is_district_admin) {
+    redirect(withQueryParam(returnPath, "error", "Permission denied."));
+  }
+
+  const { error } = await supabase
+    .from("activity_attendance")
+    .delete()
+    .eq("id", recordId);
+
+  if (error) {
+    redirect(withQueryParam(returnPath, "error", error.message));
+  }
+
+  revalidatePath(`/activities/${activityId}`);
+  revalidatePath("/district-admin");
+  redirect(withQueryParam(returnPath, "message", "Attendance record removed."));
+}
+

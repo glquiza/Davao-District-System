@@ -5,6 +5,8 @@ import { ActivityEditSection } from "@/components/ActivityEditSection";
 import { FlashBanner } from "@/components/FlashBanner";
 import { GsapPageAnimator } from "@/components/gsap/GsapPageAnimator";
 import { LivestreamVideoTemplate } from "@/components/LivestreamVideoTemplate";
+import { SubmitAttendanceModal } from "@/components/SubmitAttendanceModal";
+import { DistrictAttendanceManager } from "@/components/admin/DistrictAttendanceManager";
 import { DeleteActivityButton } from "@/components/ui/DeleteActivityButton";
 import {
   computeActivityScheduleStatus,
@@ -14,7 +16,12 @@ import {
 import { formatPhilippineDateTime } from "@/lib/date-utils";
 import { requireUserContext } from "@/lib/auth-context";
 import { createClient } from "@/lib/supabase/server";
-import type { ProgramActivity } from "@/types/database";
+import type {
+  ActivityAttendanceRecord,
+  Locale,
+  Profile,
+  ProgramActivity,
+} from "@/types/database";
 
 export default async function ActivityDetailPage({
   params,
@@ -52,6 +59,35 @@ export default async function ActivityDetailPage({
     (activity.level === "locale" &&
       Boolean(activity.locale_id) &&
       ctx.adminLocales.some((l) => l.id === activity.locale_id));
+
+  const { data: userAttendance } = await supabase
+    .from("activity_attendance")
+    .select("id, attended_at")
+    .eq("activity_id", id)
+    .eq("user_id", ctx.profile.id)
+    .maybeSingle();
+
+  const [attendanceRes, allMembersRes, allLocalesRes] = canManageActivity
+    ? await Promise.all([
+        supabase
+          .from("activity_attendance")
+          .select("*, profile:profiles!user_id(id, full_name, email, avatar_url), locale:locales(id, name, slug)")
+          .eq("activity_id", id)
+          .order("attended_at", { ascending: false }),
+        supabase
+          .from("profiles")
+          .select("id, full_name, email")
+          .order("full_name", { ascending: true }),
+        supabase
+          .from("locales")
+          .select("id, name")
+          .order("name", { ascending: true }),
+      ])
+    : [{ data: [] }, { data: [] }, { data: [] }];
+
+  const allActivityAttendance = (attendanceRes.data ?? []) as ActivityAttendanceRecord[];
+  const allMembers = (allMembersRes.data ?? []) as Pick<Profile, "id" | "full_name" | "email">[];
+  const allLocalesList = (allLocalesRes.data ?? []) as Pick<Locale, "id" | "name">[];
 
   const levelLabel =
     activity.level === "national"
@@ -109,11 +145,61 @@ export default async function ActivityDetailPage({
                 <span>Auto-Reminders: {formatReminderBadgeList(reminderMinutes)} before</span>
               </span>
             )}
+            {activity.attendance_status && activity.attendance_status !== "not_started" && (
+              <span
+                className={`rounded-full border px-3 py-1 text-xs font-bold uppercase ${
+                  activity.attendance_status === "active"
+                    ? "bg-emerald-100 text-emerald-800 border-emerald-300"
+                    : activity.attendance_status === "paused"
+                    ? "bg-amber-100 text-amber-800 border-amber-300"
+                    : "bg-stone-200 text-stone-700 border-stone-300"
+                }`}
+              >
+                Attendance: {activity.attendance_status.replace("_", " ")}
+              </span>
+            )}
           </div>
 
           <h1 className="font-serif text-3xl sm:text-4xl font-semibold tracking-tight text-[#202820] leading-snug">
             {activity.title}
           </h1>
+
+          {/* Attendance Action Section */}
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#D6C6A5]/60 bg-[#F5F1E9]/80 p-4">
+            <div className="space-y-0.5">
+              <p className="text-xs font-bold uppercase tracking-wider text-[#8C7853]">
+                Activity Attendance
+              </p>
+              <p className="text-xs text-[#475048]">
+                {activity.attendance_status === "active"
+                  ? "Attendance submission is currently OPEN. Enter the code to record your attendance."
+                  : activity.attendance_status === "paused"
+                  ? "Attendance submission is temporarily paused by the District Admin."
+                  : activity.attendance_status === "closed"
+                  ? "Attendance for this event has concluded."
+                  : "Attendance has not yet been activated by the administrator."}
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <SubmitAttendanceModal
+                activityId={activity.id}
+                activityTitle={activity.title}
+                attendanceStatus={activity.attendance_status}
+                hasAttended={Boolean(userAttendance)}
+                attendedAt={userAttendance?.attended_at}
+                userLocaleName={ctx.activeMembership?.locale?.name}
+              />
+              {canManageActivity && (
+                <DistrictAttendanceManager
+                  activity={activity}
+                  attendanceRecords={allActivityAttendance}
+                  allLocales={allLocalesList}
+                  allMembers={allMembers}
+                  returnPath={`/activities/${activity.id}`}
+                />
+              )}
+            </div>
+          </div>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 rounded-xl border border-[#D6C6A5]/50 bg-[#F5F1E9]/70 p-5 text-sm text-[#303B32]">

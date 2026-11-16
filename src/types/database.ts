@@ -3,6 +3,7 @@ export type MembershipStatus = "active" | "left" | "removed";
 export type ActivityLevel = "national" | "district" | "locale";
 export type ActivityModality = "physical" | "online" | "hybrid";
 export type ActivityStatus = "upcoming" | "ongoing" | "completed" | "cancelled";
+export type AttendanceStatus = "not_started" | "active" | "paused" | "closed";
 export type LinkPlatform = "youtube" | "facebook" | "zoom" | "google_meet" | "other";
 
 export type NotificationType =
@@ -136,6 +137,10 @@ export interface ProgramActivity {
   venue: string | null;
   status: ActivityStatus;
   thumbnail_url: string | null;
+  attendance_status?: AttendanceStatus;
+  attendance_code?: string | null;
+  attendance_activated_at?: string | null;
+  attendance_closed_at?: string | null;
   created_by: string;
   created_at: string;
   updated_at: string;
@@ -179,3 +184,16 @@ export interface UserAccessContext {
   pendingAdminInvites: Locale[];
   unreadNotificationCount: number;
 }
+
+export interface ActivityAttendanceRecord {
+  id: string;
+  activity_id: string;
+  user_id: string;
+  locale_id: string | null;
+  attended_at: string;
+  marked_by: string | null;
+  notes: string | null;
+  profile?: Pick<Profile, "id" | "full_name" | "email" | "avatar_url"> | null;
+  locale?: Pick<Locale, "id" | "name" | "slug"> | null;
+}
+

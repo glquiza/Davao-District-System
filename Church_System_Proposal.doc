@@ -89,6 +89,28 @@
     margin: 12pt 0;
     border-radius: 4pt;
   }
+  .highlight-box {
+    background-color: #FAF6EF;
+    border-left: 4.5pt solid #8C7853;
+    border-top: 1pt solid #E6DCBA;
+    border-right: 1pt solid #E6DCBA;
+    border-bottom: 1pt solid #E6DCBA;
+    padding: 12pt 15pt;
+    margin: 14pt 0;
+    border-radius: 4pt;
+  }
+  .badge-tag {
+    display: inline-block;
+    background-color: #303B32;
+    color: #F5F1E9;
+    font-size: 8.5pt;
+    font-weight: bold;
+    padding: 2pt 8pt;
+    border-radius: 10pt;
+    text-transform: uppercase;
+    letter-spacing: 0.5pt;
+    margin-right: 4pt;
+  }
   .step-table {
     width: 100%;
     border-collapse: collapse;
@@ -161,23 +183,43 @@
 <div class="callout-box">
   <strong style="color: #1E281F; font-size: 12pt;">What is this system in simple words?</strong>
   <p style="margin-top: 4pt; margin-bottom: 0;">
-    Think of this system as <strong>two helpful tools in one</strong>:
+    Think of this system as <strong>three helpful tools in one</strong>:
   </p>
   <ul style="margin-bottom: 0;">
-    <li><strong>For Members:</strong> An <strong>Official Church Bulletin Board right on your phone</strong>. You can always see when the next services are, watch online livestreams, and sign attendance with one tap when you arrive at church.</li>
+    <li><strong>For Members:</strong> An <strong>Official Church Bulletin Board right on your phone</strong>. You can always see upcoming church services, watch online livestreams, and sign attendance with one tap when you arrive at church.</li>
+    <li><strong>For Activity Reminders:</strong> An <strong>Automated Church Alert System</strong>. When a special service, fellowship, or district gathering is scheduled, members receive dedicated, visually highlighted notifications with dates, times, and venues so no one misses out.</li>
     <li><strong>For Pastors &amp; Leaders:</strong> A <strong>Digital Church Record Book</strong>. Instead of writing names on paper sign-up sheets and typing them into a computer later, attendance is counted automatically and can be printed or saved to Excel in one click.</li>
   </ul>
 </div>
 
 <h2>1. The Common Problems We Face Today</h2>
 <ul>
-  <li><strong>Announcements get lost in group chats:</strong> When we send event schedules on Messenger, they get buried under hundreds of chat messages, and brethren miss church activities.</li>
+  <li><strong>Announcements get lost in group chats:</strong> When we send event schedules on Messenger, they get buried under hundreds of chat messages, stickers, and forwarded videos. Brethren miss church activities simply because they did not see the announcement in time.</li>
   <li><strong>Long lines at the church door:</strong> Brethren have to wait in line to write their names on paper attendance sheets using the same ballpen.</li>
   <li><strong>Paperwork takes too long:</strong> Church secretaries spend hours after every service trying to read handwritten names and tally who was present.</li>
   <li><strong>Paper sheets get lost:</strong> If an attendance paper gets misplaced, the record is gone forever.</li>
 </ul>
 
-<h2>2. How It Works in 4 Easy Steps</h2>
+<h2>2. Special Feature: Never Miss a Church Event (Highlighted Activity Notifications)</h2>
+
+<div class="highlight-box">
+  <strong style="color: #5C4B28; font-size: 12pt;">
+    <span class="badge-tag">Featured Highlight</span>
+    Dedicated Notification &amp; Alert Center for Church Programs
+  </strong>
+  <p style="margin-top: 6pt; margin-bottom: 8pt;">
+    To prevent church announcements from being overlooked in busy social media group chats, the system equips every member with an organized, prioritized notification feed:
+  </p>
+  <ul style="margin-bottom: 4pt;">
+    <li><strong>Distinct Gold Highlight &amp; Badges:</strong> Program and activity notifications are visually spotlighted with an elegant gold left border and an official <em>"Program &amp; Activity"</em> badge, distinguishing them immediately from ordinary administrative notes.</li>
+    <li><strong>Event Details at a Glance:</strong> The notification card directly displays the exact scheduled date, time, and venue so brethren do not need to hunt through messages.</li>
+    <li><strong>1-Tap "View Event" Button:</strong> Allows members to instantly open the activity details, access online broadcast links, or view venue directions in one touch.</li>
+    <li><strong>Category Filter Tabs:</strong> Members can tap the <em>"Programs &amp; Activities"</em> filter pill to view only upcoming church gatherings without having to sift through general announcements.</li>
+    <li><strong>Automated Activity Reminders:</strong> The system automatically reminds brethren before an upcoming program begins, ensuring timely arrival and high attendance.</li>
+  </ul>
+</div>
+
+<h2>3. How It Works in 4 Easy Steps</h2>
 
 <table class="step-table">
   <tr>
@@ -197,8 +239,8 @@
   <tr>
     <td class="step-num">3</td>
     <td class="step-content">
-      <strong>Check Church Schedules &amp; Livestreams</strong><br>
-      Members can see all upcoming services, fellowships, and conferences. For online or hybrid services, they can watch the live broadcast directly inside the app without external distractions.
+      <strong>Check Church Schedules &amp; Alerts</strong><br>
+      Members receive highlighted event notifications with date, time, and venue, and can watch live service broadcasts directly inside the app without external social media distractions.
     </td>
   </tr>
   <tr>
@@ -210,22 +252,27 @@
   </tr>
 </table>
 
-<h2>3. What Happens if Someone Doesn't Have a Smartphone?</h2>
+<h2>4. What Happens if Someone Doesn't Have a Smartphone?</h2>
 <div class="callout-box">
   <p style="margin: 0;">
     We made sure <strong>no one is left behind</strong>: If an elderly member, a child, or someone whose phone battery died attends church, the pastor or church secretary can simply search their name on the church tablet or phone and tap <strong>"Check In"</strong>. Their attendance is counted right away alongside everyone else!
   </p>
 </div>
 
-<h2>4. What Church Leaders Get Out of This</h2>
+<h2>5. What Church Leaders Get Out of This</h2>
 
-<h3>A. Live Headcount During the Service</h3>
+<h3>A. Highlighted Communication That Reaches Brethren</h3>
+<p>
+  District and locale leadership can publish an activity once, and it immediately notifies all relevant members with clear dates, times, and venues. Members can filter specifically for <strong>"Programs &amp; Activities"</strong>, ensuring church conferences, youth fellowships, and special services get top priority.
+</p>
+
+<h3>B. Live Headcount During the Service</h3>
 <p>
   As brethren type their code or get checked in, leaders can look at their screen and see the number go up live in real time:<br>
   <em>(Example: "148 brethren present today &bull; 38 from Agdao, 29 from Buhangin, 24 from Tagum...")</em>
 </p>
 
-<h3>B. Complete Control</h3>
+<h3>C. Complete Control</h3>
 <ul>
   <li><strong>Start Attendance:</strong> Open attendance when brethren begin arriving.</li>
   <li><strong>Pause Attendance:</strong> Pause it during the sermon so people focus on the Word of God.</li>
@@ -233,7 +280,7 @@
   <li><strong>No Duplicates:</strong> The system guarantees that no member can accidentally sign in twice.</li>
 </ul>
 
-<h3>C. Official Reports in 1 Click</h3>
+<h3>D. Official Reports in 1 Click</h3>
 <p>
   When the service concludes, the leader taps one button to immediately generate:
 </p>
@@ -243,7 +290,7 @@
   <li>A <strong>Word document (.docx)</strong> for church office filing and minutes.</li>
 </ul>
 
-<h2>5. Why This is Better Than Buying a Regular Mobile App</h2>
+<h2>6. Why This is Better Than Buying a Regular Mobile App</h2>
 
 <table class="comparison">
   <thead>
@@ -273,13 +320,17 @@
       <td>Needs fast internet to download and update.</td>
       <td><strong>Works even on slow mobile data.</strong> Uses less data than loading one picture on Facebook.</td>
     </tr>
+    <tr>
+      <td>Announcements get buried under regular social media feeds.</td>
+      <td><strong>Dedicated &amp; Highlighted Notifications:</strong> Church events feature gold visual badges, venue details, and category filters.</td>
+    </tr>
   </tbody>
 </table>
 
 <div class="callout-box" style="text-align: center; margin-top: 20pt;">
   <strong style="font-size: 13pt; color: #1E281F;">Summary in One Sentence</strong><br>
   <span style="font-size: 11pt; color: #303B32;">
-    This system removes paper sign-in sheets, helps brethren stay updated with church schedules, and gives leaders fast, accurate attendance reports with zero headache.
+    This system removes paper sign-in sheets, highlights church schedules so brethren never miss an event, and gives leaders fast, accurate attendance reports with zero headache.
   </span>
 </div>
 

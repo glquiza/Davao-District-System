@@ -142,6 +142,7 @@ export function ActivityCard({
 
         <Link
           href={`/activities/${activity.id}`}
+          prefetch={true}
           className="flex items-start justify-between gap-2 font-serif text-xl font-semibold text-[#202820] group-hover:text-[#303B32]"
         >
           <span>{activity.title}</span>
@@ -238,6 +239,7 @@ export function ActivityCard({
           )}
           <Link
             href={`/activities/${activity.id}`}
+            prefetch={true}
             className="text-xs font-medium text-[#303B32] hover:text-[#202820] underline decoration-[#D6C6A5] underline-offset-4"
           >
             View Details &rarr;

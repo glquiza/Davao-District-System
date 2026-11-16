@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import type { Metadata, Viewport } from "next";
 import { GsapButtonEnhancer } from "@/components/gsap/GsapButtonEnhancer";
+import { NavigationProgressBar } from "@/components/NavigationProgressBar";
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -43,6 +45,9 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen flex flex-col bg-[#F5F1E9] text-[#202820] font-sans antialiased selection:bg-[#D6C6A5]/40 selection:text-[#202820]">
+        <Suspense fallback={null}>
+          <NavigationProgressBar />
+        </Suspense>
         <GsapButtonEnhancer />
         {children}
       </body>

@@ -187,7 +187,7 @@ export function AppNavbar({ ctx }: { ctx: UserAccessContext }) {
       )
       .subscribe();
 
-    // 2. Lightweight check every 8s while tab is visible (catches new notifications + countdown reminders + admin invites)
+    // 2. Fallback check every 45s while tab is visible (catches countdown reminders + admin invites)
     const interval = window.setInterval(async () => {
       if (document.visibilityState !== "visible") return;
 
@@ -206,7 +206,7 @@ export function AppNavbar({ ctx }: { ctx: UserAccessContext }) {
 
       await checkDueCountdownReminders();
       await checkPendingAdminInvites();
-    }, 8000);
+    }, 45000);
 
     return () => {
       window.clearInterval(interval);
@@ -373,6 +373,7 @@ export function AppNavbar({ ctx }: { ctx: UserAccessContext }) {
                 <Link
                   key={item.href}
                   href={item.href}
+                  prefetch={true}
                   data-active={item.active ? "true" : "false"}
                   className={`relative z-10 inline-flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-sm font-medium ${
                     item.active
@@ -393,6 +394,7 @@ export function AppNavbar({ ctx }: { ctx: UserAccessContext }) {
 
             <Link
               href="/notifications"
+              prefetch={true}
               className={`relative inline-flex items-center justify-center h-9 w-9 rounded-xl border ${
                 pathname.startsWith("/notifications")
                   ? "border-[#303B32] bg-[#303B32] text-white"
@@ -462,6 +464,7 @@ export function AppNavbar({ ctx }: { ctx: UserAccessContext }) {
                   <Link
                     key={item.href}
                     href={item.href}
+                    prefetch={true}
                     onClick={() => setMobileOpen(false)}
                     className={`flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-sm font-medium ${
                       item.active

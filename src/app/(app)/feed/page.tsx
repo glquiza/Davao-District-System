@@ -91,6 +91,7 @@ export default async function FeedPage({
               <Link
                 key={tab.label}
                 href={href}
+                prefetch={true}
                 className={`rounded-lg px-4 py-1.5 text-xs font-medium ${
                   active
                     ? "bg-gradient-to-r from-[#3A483D] to-[#202820] text-[#F5F1E9] shadow-sm"

@@ -8,7 +8,11 @@ export async function updateSession(request: NextRequest) {
   }
 
   const pathname = request.nextUrl.pathname;
-  const isAuthPage = pathname.startsWith("/login") || pathname.startsWith("/register");
+  const isAuthPage =
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/register") ||
+    pathname.startsWith("/forgot-password");
+  const isResetPasswordPage = pathname.startsWith("/reset-password");
   const isPublicRoot = pathname === "/";
 
   // Fast-path: do not make an extra auth roundtrip on POST Server Actions (e.g., submitting login/signup forms) or public root
@@ -25,6 +29,12 @@ export async function updateSession(request: NextRequest) {
     if (!isAuthPage) {
       const redirectUrl = request.nextUrl.clone();
       redirectUrl.pathname = "/login";
+      if (isResetPasswordPage) {
+        redirectUrl.searchParams.set(
+          "error",
+          "Your password reset link is invalid or has expired. Please request a new one."
+        );
+      }
       return NextResponse.redirect(redirectUrl);
     }
     return NextResponse.next({ request });
@@ -56,10 +66,17 @@ export async function updateSession(request: NextRequest) {
   if (!user && !isAuthPage) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/login";
+    if (isResetPasswordPage) {
+      redirectUrl.searchParams.set(
+        "error",
+        "Your password reset link is invalid or has expired. Please request a new one."
+      );
+    }
     return NextResponse.redirect(redirectUrl);
   }
 
-  if (user && isAuthPage) {
+  // If user is authenticated and on an auth page, redirect to feed EXCEPT when they are on reset-password
+  if (user && isAuthPage && !isResetPasswordPage) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/feed";
     return NextResponse.redirect(redirectUrl);

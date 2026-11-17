@@ -108,3 +108,122 @@ export async function signOutAction() {
   revalidatePath("/", "layout");
   redirect("/login");
 }
+
+export async function requestPasswordResetAction(
+  formDataOrState: FormData | { email?: string }
+): Promise<{ success?: boolean; message?: string; error?: string }> {
+  let email = "";
+  if (formDataOrState instanceof FormData) {
+    email = String(formDataOrState.get("email") ?? "").trim().toLowerCase();
+  } else if (typeof formDataOrState === "object" && formDataOrState !== null) {
+    email = String(formDataOrState.email ?? "").trim().toLowerCase();
+  }
+
+  if (!email) {
+    return { error: "Please enter your email address." };
+  }
+
+  const emailCheck = await validateRealEmailAddress(email);
+  if (!emailCheck.valid) {
+    return { error: emailCheck.reason ?? "Please enter a valid, active email address." };
+  }
+
+  const headerList = await headers();
+  const origin =
+    headerList.get("origin") ||
+    (headerList.get("host") ? `https://${headerList.get("host")}` : "http://localhost:3000");
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${origin}/auth/callback?next=/reset-password`,
+  });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return {
+    success: true,
+    message: `A password reset link has been sent to ${email}. Please check your inbox (and spam folder).`,
+  };
+}
+
+export async function requestPasswordResetFormAction(formData: FormData) {
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+
+  if (!email) {
+    redirect(
+      "/forgot-password?error=" +
+        encodeURIComponent("Please enter your email address.")
+    );
+  }
+
+  const emailCheck = await validateRealEmailAddress(email);
+  if (!emailCheck.valid) {
+    redirect(
+      "/forgot-password?error=" +
+        encodeURIComponent(
+          emailCheck.reason ?? "Please enter a valid, active email address."
+        )
+    );
+  }
+
+  const headerList = await headers();
+  const origin =
+    headerList.get("origin") ||
+    (headerList.get("host") ? `https://${headerList.get("host")}` : "http://localhost:3000");
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${origin}/auth/callback?next=/reset-password`,
+  });
+
+  if (error) {
+    redirect("/forgot-password?error=" + encodeURIComponent(error.message));
+  }
+
+  redirect(
+    "/forgot-password?message=" +
+      encodeURIComponent(
+        `A password reset link has been sent to ${email}. Please check your inbox (and spam folder).`
+      )
+  );
+}
+
+export async function updatePasswordAction(formData: FormData) {
+  const password = String(formData.get("password") ?? "");
+  const confirmPassword = String(formData.get("confirm_password") ?? "");
+
+  if (!password || !confirmPassword) {
+    redirect(
+      "/reset-password?error=" +
+        encodeURIComponent("Both password fields are required.")
+    );
+  }
+
+  if (password.length < 6) {
+    redirect(
+      "/reset-password?error=" +
+        encodeURIComponent("Password must be at least 6 characters long.")
+    );
+  }
+
+  if (password !== confirmPassword) {
+    redirect(
+      "/reset-password?error=" +
+        encodeURIComponent("Passwords do not match. Please verify and try again.")
+    );
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.updateUser({ password });
+
+  if (error) {
+    redirect("/reset-password?error=" + encodeURIComponent(error.message));
+  }
+
+  redirect(
+    "/feed?message=" +
+      encodeURIComponent("Password updated successfully! Welcome back.")
+  );
+}

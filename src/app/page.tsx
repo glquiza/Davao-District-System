@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowRight, BellRing, Building2, Database, ShieldCheck, Video } from "lucide-react";
+import {
+  ArrowRight,
+  BellRing,
+  Building2,
+  ClipboardCheck,
+  Database,
+  ShieldCheck,
+  Video,
+} from "lucide-react";
 import { GsapPageAnimator } from "@/components/gsap/GsapPageAnimator";
 import { InstallAppButton } from "@/components/InstallAppButton";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
@@ -30,7 +38,7 @@ export default async function HomePage() {
         aria-hidden="true"
         className="pointer-events-none fixed inset-0 z-0 bg-gradient-to-b from-[#FBF9F4]/85 via-[#F5F1E9]/75 to-[#E8DFCC]/90 backdrop-blur-[1.5px]"
       />
-      <GsapPageAnimator className="relative z-10 mx-auto max-w-5xl px-6 py-20 space-y-20">
+      <GsapPageAnimator className="relative z-10 mx-auto max-w-6xl px-6 py-20 space-y-20">
         <section className="text-center space-y-6">
           <div data-gsap="hero" className="flex flex-col items-center gap-3.5">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -100,7 +108,7 @@ export default async function HomePage() {
           )}
         </section>
 
-        <section className="grid gap-6 sm:grid-cols-3">
+        <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           <div
             data-gsap="item"
             className="relative overflow-hidden rounded-2xl border border-[#D6C6A5]/70 bg-gradient-to-br from-white via-[#FCFBF7] to-[#F2ECE0] p-7 shadow-sm space-y-3"
@@ -132,6 +140,23 @@ export default async function HomePage() {
             <p className="text-sm text-[#475048] leading-relaxed">
               Watch live worship broadcasts and special services directly in one place, and check
               accurate dates, venues, and online meeting links anytime.
+            </p>
+          </div>
+
+          <div
+            data-gsap="item"
+            className="relative overflow-hidden rounded-2xl border border-[#D6C6A5]/70 bg-gradient-to-br from-white via-[#FCFBF7] to-[#F2ECE0] p-7 shadow-sm space-y-3"
+          >
+            <div className="inset-x-0 top-0 h-1 absolute bg-gradient-to-r from-[#5C4B28] via-[#8C7853] to-[#303B32]" />
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[#D6C6A5]/70 bg-gradient-to-br from-[#3A483D] to-[#202820] text-[#F5F1E9] shadow-sm">
+              <ClipboardCheck className="h-5 w-5 text-[#D6C6A5]" />
+            </span>
+            <h2 className="font-serif text-lg font-semibold text-[#202820]">
+              Attendance Management
+            </h2>
+            <p className="text-sm text-[#475048] leading-relaxed">
+              Check in seamlessly during services with a 6-digit code or QR scan. Leaders get
+              live headcounts, manual sign-ins, and 1-click Excel, Word, or PDF reports.
             </p>
           </div>
 

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, CalendarSearch } from "lucide-react";
+import { ArrowRight, Building2, CalendarSearch } from "lucide-react";
 import { ActivityCard } from "@/components/ActivityCard";
 import { FlashBanner } from "@/components/FlashBanner";
 import { GsapPageAnimator } from "@/components/gsap/GsapPageAnimator";
@@ -7,16 +7,17 @@ import { LocaleAdminInvitationCards } from "@/components/LocaleAdminInvitationCa
 import { requireUserContext } from "@/lib/auth-context";
 import { isLocaleRemoved } from "@/lib/locale-metadata";
 import { createClient } from "@/lib/supabase/server";
-import type { ActivityLevel, ProgramActivity } from "@/types/database";
+import type { ActivityLevel, Locale, ProgramActivity } from "@/types/database";
 
 export default async function FeedPage({
   searchParams,
 }: {
-  searchParams: Promise<{ level?: string; message?: string; error?: string }>;
+  searchParams: Promise<{ level?: string; locale?: string; message?: string; error?: string }>;
 }) {
   const ctx = await requireUserContext();
   const params = await searchParams;
   const selectedLevel = params.level as ActivityLevel | undefined;
+  const selectedLocaleId = params.locale;
 
   const supabase = await createClient();
   let query = supabase
@@ -28,17 +29,45 @@ export default async function FeedPage({
     query = query.eq("level", selectedLevel);
   }
 
-  const { data: activitiesData, error: queryErr } = await query;
+  const [activitiesRes, localesRes] = await Promise.all([
+    query,
+    supabase
+      .from("locales")
+      .select("id, name, slug, address, contact_info")
+      .order("name", { ascending: true }),
+  ]);
+
+  const activitiesData = activitiesRes.data;
+  const queryErr = activitiesRes.error;
+
+  const allActiveLocales = ((localesRes.data ?? []) as Locale[]).filter(
+    (loc) => !isLocaleRemoved(loc)
+  );
 
   const hasDistrictAndLocaleAccess =
     Boolean(ctx.activeMembership) ||
     ctx.profile.is_district_admin ||
     ctx.adminLocales.length > 0;
 
-  const allowedLocaleIds = new Set<string>([
-    ...(ctx.activeMembership ? [ctx.activeMembership.locale_id] : []),
-    ...ctx.adminLocales.map((l) => l.id),
-  ]);
+  // Determine all accessible locales for this user
+  let accessibleLocales: Locale[] = [];
+  if (ctx.profile.is_district_admin) {
+    accessibleLocales = allActiveLocales;
+  } else {
+    const localeMap = new Map<string, Locale>();
+    if (ctx.activeMembership?.locale && !isLocaleRemoved(ctx.activeMembership.locale)) {
+      localeMap.set(ctx.activeMembership.locale.id, ctx.activeMembership.locale);
+    }
+    for (const loc of ctx.adminLocales) {
+      if (!isLocaleRemoved(loc)) {
+        localeMap.set(loc.id, loc);
+      }
+    }
+    accessibleLocales = Array.from(localeMap.values());
+  }
+
+  const isMultiLocale = ctx.profile.is_district_admin || accessibleLocales.length > 1;
+  const allowedLocaleIds = new Set<string>(accessibleLocales.map((l) => l.id));
 
   const activities = ((activitiesData ?? []) as ProgramActivity[]).filter((act) => {
     if (act.level === "national") return true;
@@ -46,6 +75,7 @@ export default async function FeedPage({
     if (act.level === "district") return true;
     if (act.level === "locale") {
       if (isLocaleRemoved(act.locale)) return false;
+      if (selectedLocaleId && act.locale_id !== selectedLocaleId) return false;
       if (ctx.profile.is_district_admin) return true;
       return Boolean(act.locale_id && allowedLocaleIds.has(act.locale_id));
     }
@@ -58,7 +88,12 @@ export default async function FeedPage({
     ...(hasDistrictAndLocaleAccess
       ? [
           { label: "Davao District", value: "district" },
-          { label: ctx.activeMembership?.locale.name ?? "Locale", value: "locale" },
+          {
+            label: isMultiLocale
+              ? "All Locales"
+              : (ctx.activeMembership?.locale.name ?? "Locale"),
+            value: "locale",
+          },
         ]
       : []),
   ];
@@ -105,6 +140,69 @@ export default async function FeedPage({
         </div>
       </div>
 
+      {isMultiLocale && accessibleLocales.length > 0 && (selectedLevel === "locale" || !selectedLevel) && (
+        <div
+          data-gsap="item"
+          className="rounded-2xl border border-[#D6C6A5]/70 bg-gradient-to-r from-white via-[#FCFBF7] to-[#F5F0E4] p-4 shadow-sm space-y-2.5"
+        >
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#303B32]">
+              <Building2 className="h-4 w-4 text-[#8C7853]" />
+              <span>Select Congregation / Locale:</span>
+            </div>
+            {selectedLocaleId && (
+              <Link
+                href={selectedLevel ? `/feed?level=${selectedLevel}` : "/feed"}
+                prefetch={true}
+                className="text-[11px] font-medium text-[#8C7853] hover:text-[#303B32] hover:underline"
+              >
+                Clear Locale Filter &times;
+              </Link>
+            )}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-1.5">
+            <Link
+              href={selectedLevel ? `/feed?level=${selectedLevel}` : "/feed"}
+              prefetch={true}
+              className={`rounded-full px-3.5 py-1 text-xs font-medium transition-all ${
+                !selectedLocaleId
+                  ? "bg-[#303B32] text-white shadow-sm font-semibold"
+                  : "border border-[#D6C6A5] bg-white text-[#475048] hover:border-[#8C7853] hover:text-[#202820]"
+              }`}
+            >
+              All Locales ({accessibleLocales.length})
+            </Link>
+
+            {accessibleLocales.map((loc) => {
+              const isSelected = selectedLocaleId === loc.id;
+              const href = isSelected
+                ? selectedLevel
+                  ? `/feed?level=${selectedLevel}`
+                  : "/feed"
+                : selectedLevel
+                  ? `/feed?level=${selectedLevel}&locale=${loc.id}`
+                  : `/feed?locale=${loc.id}`;
+
+              return (
+                <Link
+                  key={loc.id}
+                  href={href}
+                  prefetch={true}
+                  className={`rounded-full px-3.5 py-1 text-xs font-medium transition-all ${
+                    isSelected
+                      ? "bg-gradient-to-r from-[#8C7853] via-[#7D6B4A] to-[#69593D] text-white shadow-sm font-semibold"
+                      : "border border-[#D6C6A5] bg-white text-[#475048] hover:border-[#8C7853] hover:text-[#202820]"
+                  }`}
+                >
+                  {loc.name}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       <FlashBanner message={params.message} error={params.error ?? queryErr?.message} />
 
       <LocaleAdminInvitationCards
@@ -147,7 +245,9 @@ export default async function FeedPage({
           <CalendarSearch className="h-8 w-8 text-[#8C7853] mx-auto" />
           <div className="space-y-1">
             <h2 className="font-serif text-lg font-semibold text-[#202820]">
-              No activities published under this filter yet
+              {selectedLocaleId
+                ? `No activities published under this locale yet`
+                : "No activities published under this filter yet"}
             </h2>
             <p className="text-xs text-[#636B62]">
               New announcements, worship schedules, and livestreams will appear here automatically.
@@ -163,12 +263,20 @@ export default async function FeedPage({
                 Boolean(activity.locale_id) &&
                 ctx.adminLocales.some((l) => l.id === activity.locale_id));
 
+            const currentReturnPath = selectedLevel
+              ? selectedLocaleId
+                ? `/feed?level=${selectedLevel}&locale=${selectedLocaleId}`
+                : `/feed?level=${selectedLevel}`
+              : selectedLocaleId
+                ? `/feed?locale=${selectedLocaleId}`
+                : "/feed";
+
             return (
               <ActivityCard
                 key={activity.id}
                 activity={activity}
                 canManage={canManage}
-                returnPath={selectedLevel ? `/feed?level=${selectedLevel}` : "/feed"}
+                returnPath={currentReturnPath}
               />
             );
           })}

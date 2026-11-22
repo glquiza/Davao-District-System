@@ -231,21 +231,25 @@ export function AppNavbar({ ctx }: { ctx: UserAccessContext }) {
   const isDistrictAdmin = ctx.profile.is_district_admin;
   const isLocaleAdmin = ctx.adminLocales.length > 0;
 
-  const statusBadge = ctx.activeMembership
-    ? ctx.pendingLeaveRequest
-      ? `${ctx.activeMembership.locale.name} • Leave Pending`
-      : ctx.activeMembership.locale.name
-    : ctx.pendingAdminInvites.length > 0
-      ? `Admin Invite: ${ctx.pendingAdminInvites[0].name}`
-      : ctx.pendingJoinRequest
-        ? `Pending: ${ctx.pendingJoinRequest.locale.name}`
-        : "National Access";
+  const statusBadge = isDistrictAdmin
+    ? "District Admin"
+    : ctx.activeMembership
+      ? ctx.pendingLeaveRequest
+        ? `${ctx.activeMembership.locale.name} • Leave Pending`
+        : ctx.activeMembership.locale.name
+      : ctx.pendingAdminInvites.length > 0
+        ? `Admin Invite: ${ctx.pendingAdminInvites[0].name}`
+        : ctx.pendingJoinRequest
+          ? `Pending: ${ctx.pendingJoinRequest.locale.name}`
+          : "National Access";
 
-  const statusBadgeColor = ctx.activeMembership
-    ? "bg-gradient-to-r from-[#FBF9F4] via-[#F0ECE3] to-[#E6DEC8] text-[#303B32] border-[#D6C6A5]"
-    : ctx.pendingJoinRequest
-      ? "bg-gradient-to-r from-[#FBF9F4] to-[#EDE3CE] text-[#6B5A38] border-[#D6C6A5]"
-      : "bg-gradient-to-r from-[#F5F1E9] to-[#E8E2D4] text-[#475048] border-[#D6C6A5]/70";
+  const statusBadgeColor = isDistrictAdmin
+    ? "bg-gradient-to-r from-[#3A483D] via-[#303B32] to-[#202820] text-[#F5F1E9] border-[#303B32] shadow-sm font-semibold"
+    : ctx.activeMembership
+      ? "bg-gradient-to-r from-[#FBF9F4] via-[#F0ECE3] to-[#E6DEC8] text-[#303B32] border-[#D6C6A5]"
+      : ctx.pendingJoinRequest
+        ? "bg-gradient-to-r from-[#FBF9F4] to-[#EDE3CE] text-[#6B5A38] border-[#D6C6A5]"
+        : "bg-gradient-to-r from-[#F5F1E9] to-[#E8E2D4] text-[#475048] border-[#D6C6A5]/70";
 
   const initials =
     ctx.profile.full_name

@@ -5,6 +5,7 @@ import { FlashBanner } from "@/components/FlashBanner";
 import { requireUserContext } from "@/lib/auth-context";
 import { createClient } from "@/lib/supabase/server";
 import type {
+  ActivityAttendanceRecord,
   InvitationCode,
   LeaveRequest,
   Membership,
@@ -69,7 +70,7 @@ export default async function LocaleAdminPage({
     supabase
       .from("programs_activities")
       .select(
-        "id, title, description, level, district_id, locale_id, category, modality, starts_at, ends_at, venue, status, created_by, created_at, updated_at"
+        "id, title, description, level, district_id, locale_id, category, modality, starts_at, ends_at, venue, status, attendance_status, attendance_code, attendance_activated_at, attendance_closed_at, created_by, created_at, updated_at"
       )
       .eq("locale_id", selectedLocale.id)
       .eq("level", "locale")
@@ -105,6 +106,31 @@ export default async function LocaleAdminPage({
   })[];
 
   const localeActivities = (localeActivitiesRes.data ?? []) as ProgramActivity[];
+  const activityIds = localeActivities.map((a) => a.id);
+
+  const [attendanceRes, allMembersRes] = await Promise.all([
+    activityIds.length > 0
+      ? supabase
+          .from("activity_attendance")
+          .select("*, profile:profiles!user_id(id, full_name, email, avatar_url), locale:locales(id, name, slug)")
+          .in("activity_id", activityIds)
+          .order("attended_at", { ascending: false })
+      : Promise.resolve({ data: [] }),
+    supabase
+      .from("profiles")
+      .select("id, full_name, email")
+      .order("full_name", { ascending: true }),
+  ]);
+
+  const attendanceByActivity: Record<string, ActivityAttendanceRecord[]> = {};
+  for (const att of (attendanceRes.data ?? []) as ActivityAttendanceRecord[]) {
+    if (!attendanceByActivity[att.activity_id]) {
+      attendanceByActivity[att.activity_id] = [];
+    }
+    attendanceByActivity[att.activity_id].push(att);
+  }
+
+  const allMembers = (allMembersRes.data ?? []) as Pick<Profile, "id" | "full_name" | "email">[];
 
   const validTabs: LocaleAdminTab[] = ["requests", "codes", "publish", "members"];
   const initialTab: LocaleAdminTab = validTabs.includes(params.tab as LocaleAdminTab)
@@ -165,6 +191,8 @@ export default async function LocaleAdminPage({
         pendingLeaves={pendingLeaves}
         activeMembers={activeMembers}
         localeActivities={localeActivities}
+        attendanceByActivity={attendanceByActivity}
+        allMembers={allMembers}
         initialTab={initialTab}
       />
     </div>

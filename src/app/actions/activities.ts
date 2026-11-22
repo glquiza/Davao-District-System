@@ -475,14 +475,45 @@ export async function updateAttendanceStatusAction(formData: FormData) {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
+  const { data: activity, error: actError } = await supabase
+    .from("programs_activities")
+    .select("id, title, level, locale_id")
+    .eq("id", activityId)
+    .single();
+
+  if (actError || !activity) {
+    redirect(withQueryParam(returnPath, "error", "Activity not found."));
+  }
+
   const { data: profile } = await supabase
     .from("profiles")
     .select("is_district_admin")
     .eq("id", user.id)
     .single();
 
-  if (!profile?.is_district_admin) {
-    redirect(withQueryParam(returnPath, "error", "Only administrators can manage attendance settings."));
+  let canManage = Boolean(profile?.is_district_admin);
+
+  if (!canManage && activity.level === "locale" && activity.locale_id) {
+    const { data: la } = await supabase
+      .from("locale_admins")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("locale_id", activity.locale_id)
+      .maybeSingle();
+
+    if (la) {
+      canManage = true;
+    }
+  }
+
+  if (!canManage) {
+    redirect(
+      withQueryParam(
+        returnPath,
+        "error",
+        "Permission denied. You can only manage attendance settings for your assigned Locale church activities."
+      )
+    );
   }
 
   const updates: Record<string, unknown> = {
@@ -508,6 +539,7 @@ export async function updateAttendanceStatusAction(formData: FormData) {
   revalidatePath("/feed");
   revalidatePath(`/activities/${activityId}`);
   revalidatePath("/district-admin");
+  revalidatePath("/locale-admin");
   redirect(
     withQueryParam(
       returnPath,
@@ -615,14 +647,49 @@ export async function manualCheckInAction(formData: FormData) {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
+  const { data: activity, error: actError } = await supabase
+    .from("programs_activities")
+    .select("id, title, level, locale_id")
+    .eq("id", activityId)
+    .single();
+
+  if (actError || !activity) {
+    redirect(withQueryParam(returnPath, "error", "Activity not found."));
+  }
+
   const { data: profile } = await supabase
     .from("profiles")
     .select("is_district_admin")
     .eq("id", user.id)
     .single();
 
-  if (!profile?.is_district_admin) {
-    redirect(withQueryParam(returnPath, "error", "Only administrators can manually check in attendees."));
+  let canManage = Boolean(profile?.is_district_admin);
+  let adminRoleLabel = "District Admin";
+
+  if (!canManage && activity.level === "locale" && activity.locale_id) {
+    const { data: la } = await supabase
+      .from("locale_admins")
+      .select("id, locale:locales(name)")
+      .eq("user_id", user.id)
+      .eq("locale_id", activity.locale_id)
+      .maybeSingle();
+
+    if (la) {
+      canManage = true;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const locName = (la.locale as any)?.name ?? "Locale";
+      adminRoleLabel = `${locName} Admin`;
+    }
+  }
+
+  if (!canManage) {
+    redirect(
+      withQueryParam(
+        returnPath,
+        "error",
+        "Permission denied. You can only check in attendees for your assigned Locale church activities."
+      )
+    );
   }
 
   const { data: activeMembership } = await supabase
@@ -641,7 +708,7 @@ export async function manualCheckInAction(formData: FormData) {
         locale_id: activeMembership?.locale_id ?? null,
         attended_at: new Date().toISOString(),
         marked_by: user.id,
-        notes: notes || "Checked in by District Admin",
+        notes: notes || `Checked in by ${adminRoleLabel}`,
       },
       { onConflict: "activity_id,user_id" }
     );
@@ -652,6 +719,7 @@ export async function manualCheckInAction(formData: FormData) {
 
   revalidatePath(`/activities/${activityId}`);
   revalidatePath("/district-admin");
+  revalidatePath("/locale-admin");
   redirect(withQueryParam(returnPath, "message", "Member checked in successfully."));
 }
 
@@ -668,14 +736,48 @@ export async function removeAttendanceRecordAction(formData: FormData) {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
+  const { data: record, error: recError } = await supabase
+    .from("activity_attendance")
+    .select("id, activity_id, activity:programs_activities(id, level, locale_id)")
+    .eq("id", recordId)
+    .single();
+
+  if (recError || !record) {
+    redirect(withQueryParam(returnPath, "error", "Attendance record not found."));
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const parentAct = record.activity as any;
+
   const { data: profile } = await supabase
     .from("profiles")
     .select("is_district_admin")
     .eq("id", user.id)
     .single();
 
-  if (!profile?.is_district_admin) {
-    redirect(withQueryParam(returnPath, "error", "Permission denied."));
+  let canManage = Boolean(profile?.is_district_admin);
+
+  if (!canManage && parentAct?.level === "locale" && parentAct?.locale_id) {
+    const { data: la } = await supabase
+      .from("locale_admins")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("locale_id", parentAct.locale_id)
+      .maybeSingle();
+
+    if (la) {
+      canManage = true;
+    }
+  }
+
+  if (!canManage) {
+    redirect(
+      withQueryParam(
+        returnPath,
+        "error",
+        "Permission denied. You can only remove attendance records for your assigned Locale church activities."
+      )
+    );
   }
 
   const { error } = await supabase
@@ -689,6 +791,7 @@ export async function removeAttendanceRecordAction(formData: FormData) {
 
   revalidatePath(`/activities/${activityId}`);
   revalidatePath("/district-admin");
+  revalidatePath("/locale-admin");
   redirect(withQueryParam(returnPath, "message", "Attendance record removed."));
 }
 

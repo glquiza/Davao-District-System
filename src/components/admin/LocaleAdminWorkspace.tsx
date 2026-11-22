@@ -25,6 +25,7 @@ import {
   updateLocaleInfoAction,
 } from "@/app/actions/locale-admin";
 import { ActivityPublisherForm } from "@/components/ActivityPublisherForm";
+import { DistrictAttendanceManager } from "@/components/admin/DistrictAttendanceManager";
 import { CopyCodeButton } from "@/components/CopyCodeButton";
 import { DeleteActivityButton } from "@/components/ui/DeleteActivityButton";
 import { SubmitButton } from "@/components/ui/SubmitButton";
@@ -32,6 +33,7 @@ import { computeActivityScheduleStatus } from "@/lib/activity-reminders";
 import { formatPhilippineDateTime } from "@/lib/date-utils";
 import { parseLocaleMetadata } from "@/lib/locale-metadata";
 import type {
+  ActivityAttendanceRecord,
   InvitationCode,
   LeaveRequest,
   Locale,
@@ -53,6 +55,8 @@ export function LocaleAdminWorkspace({
   pendingLeaves,
   activeMembers,
   localeActivities,
+  attendanceByActivity = {},
+  allMembers = [],
   initialTab = "requests",
 }: {
   selectedLocale: Locale;
@@ -65,6 +69,8 @@ export function LocaleAdminWorkspace({
   pendingLeaves: (LeaveRequest & { profile: Profile })[];
   activeMembers: (Membership & { profile: Profile })[];
   localeActivities: ProgramActivity[];
+  attendanceByActivity?: Record<string, ActivityAttendanceRecord[]>;
+  allMembers?: Pick<Profile, "id" | "full_name" | "email">[];
   initialTab?: LocaleAdminTab;
 }) {
   const [activeTab, setActiveTab] = useState<LocaleAdminTab>(initialTab);
@@ -616,7 +622,14 @@ export function LocaleAdminWorkspace({
                           <span>Open Details</span>
                           <ExternalLink className="h-3 w-3" />
                         </Link>
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <DistrictAttendanceManager
+                            activity={act}
+                            attendanceRecords={attendanceByActivity[act.id] ?? []}
+                            allLocales={[selectedLocale]}
+                            allMembers={allMembers}
+                            returnPath={`/locale-admin?locale=${selectedLocale.id}&tab=publish`}
+                          />
                           <Link
                             href={`/activities/${act.id}?edit=true`}
                             className="inline-flex items-center gap-1 rounded-lg border border-[#D6C6A5] bg-[#F0ECE3] px-2.5 py-1 text-xs font-medium text-[#202820] hover:bg-[#303B32] hover:text-white"
